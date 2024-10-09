@@ -1,0 +1,1334 @@
+{
+	"info": {
+		"_postman_id": "19289351-0dcb-4c70-ba35-1e2b6c949d57",
+		"name": "Simple Grocery Store API",
+		"description": "This API allows you to place a grocery order which will be ready for pick-up in the store.\n\nThe API is available at `https://simple-grocery-store-api.glitch.me`\n\nAlternative URL: `http://simple-grocery-store-api.online/` (HTTP only!)\n\nLink to official documentation is [here](https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32643030"
+	},
+	"item": [
+		{
+			"name": "Happy Path",
+			"item": [
+				{
+					"name": "API status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is a string and equal to 'UP'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.status).to.be.a('string');\r",
+									"    pm.expect(jsonData.status).to.equal('UP');\r",
+									"});\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						},
+						"description": "This endpoint makes an HTTP GET request to retrieve the status of the simple grocery store API. The response will be in JSON format with a status field indicating the current status of the API.\n\nExample response:\n\n``` json\n{\n    \"status\": \"UP\"\n}\n\n ```\n\nStatus `UP` indicates that the API is running as expected.\n\nNo response or any other response indicates that the API is not functioning correctly."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Results parameter limits the number of items in the list\", function () {",
+									"    const resultsParam = pm.request.url.query.get('results');",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.length).to.be.at.most(parseInt(resultsParam));",
+									"});",
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=2&category=coffee",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "results",
+									"value": "2"
+								},
+								{
+									"key": "category",
+									"value": "coffee"
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory.\n\n#### Parameters\n\n- `category` (string, query, optional): Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.\n- `results` (integer, query, optional): Specifies the number of results you want. Must be a number between 1 and 20. By default, only 20 products will be displayed.\n- `available` (boolean, query, optional): Specifies the availability of the products. By default, all products will be displayed.\n    \n\n#### Response\n\nThe response will be a JSON array containing objects with the following properties:\n\n- `id` (number): The unique identifier of the product.\n- `category` (string): The category of the product.\n- `name` (string): The name of the product.\n- `inStock` (boolean): Indicates the availability of the product.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 400 Bad Request: Indicates that the parameters provided are invalid."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Response status id\", function () {",
+									"    pm.expect(pm.response.json().id).equals(4643);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:productId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":productId"
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "4643"
+								}
+							]
+						},
+						"description": "Returns a single product from the inventory.\n\n#### Parameters\n\n- productId (integer, required) - Specifies the product's id you wish to retrieve.\n- product-label (boolean, optional) - Returns the product label in PDF format.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 404 Not found: Indicates that there is no product with the specified id."
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set the cartId parameter using pm.variables.get()",
+									"var cartId = pm.variables.get(\"cartId\");",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								}
+							]
+						},
+						"description": "This endpoint retrieves a specific cart based on the provided cartId.\n\n## Parameters\n\n- `cartId` (required, path, string): Specifies the id of the cart you wish to retrieve.\n    \n\n## Response\n\n- Status: 200 OK\n- Content-Type: application/json\n- Body:\n    \n    ``` json\n    {\n        \"items\": [],\n        \"created\": \"\"\n    }\n    \n     ```\n    \n\n### Status Codes\n\n- 200 OK: Indicates a successful response.\n- 404 Not found: Indicates that there is no cart with the specified id."
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								}
+							]
+						},
+						"description": "Returns the items in a cart.\n\n### Parameters\n\n- cartId (required, string, path) - Specifies the id of the cart for which you wish to retrieve the items.\n    \n\n### Response\n\nThe API returns a status code of 200 if the request is successful, and an empty array in the response body.\n\n- 200 OK - Indicates a successful response.\n- 404 Not found - Indicates that there is no cart with the specified id."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"})",
+									"",
+									"pm.test(\"Response has valid cart id\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('object');",
+									"    pm.expect(jsonData).to.have.property('cartId');",
+									"    pm.expect(jsonData.cartId).to.be.an('string');",
+									"    pm.collectionVariables.set('cartID', jsonData.cartId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts"
+							]
+						},
+						"description": "To create a new cart, submit an empty POST request to the /carts endpoint.\n\n### Request\n\n`POST /carts`\n\n### Response\n\n- Status: 201\n- Content-Type: application/json\n    \n\nExample response body:\n\n``` json\n{\n  \"created\": true,\n  \"cartId\": \"bx0-ycNjqIm5IvufuuZ09\"\n}\n\n ```\n\nIndicates that the cart has been created successfully.\n\nNo parameters are accepted for this request."
+					},
+					"response": []
+				},
+				{
+					"name": "Add item to cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Item was created\", function () {",
+									"  pm.expect(jsonData).to.be.an(\"object\");",
+									"",
+									"  pm.expect(jsonData).to.haveOwnProperty(\"created\");",
+									"  pm.expect(jsonData.created).to.be.an(\"boolean\");",
+									"  pm.expect(jsonData.created).to.equal(true);",
+									"  ",
+									"  pm.expect(jsonData).to.haveOwnProperty(\"itemId\");",
+									"  pm.expect(jsonData.itemId).to.be.an(\"number\");",
+									"});",
+									"",
+									"pm.test(\"Set itemID variable in the collection to the response value\", function () {",
+									"    pm.collectionVariables.set(\"lastAddedItemId\", jsonData.itemId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"productId\": 8739,\n   \"quantity\" : 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								}
+							]
+						},
+						"description": "Allows the addition of items to an existing cart. Only one item can be added at a time.\n\n- Method: POST\n- URL: `{{baseUrl}}/carts/:cartId/items`\n    \n\n### Request Body\n\nThe request body needs to be in JSON format.\n\n| Name | Type | In | Required | Description |\n| --- | --- | --- | --- | --- |\n| cartId | string | path | Yes | Specifies the cart id |\n| productId | integer | body | Yes | Specifies the product id |\n| quantity | integer | body | No | If no quantity is provided, the default value is 1. |\n\nExample request body:\n\n``` json\n{\n   \"productId\": 1234\n}\n\n ```\n\n### Status codes\n\n- 201 Created: Indicates that the item has been added successfully.\n- 400 Bad Request: Indicates that the parameters provided are invalid."
+					},
+					"response": []
+				},
+				{
+					"name": "Update quantity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"  pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\" : 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}"
+								}
+							]
+						},
+						"description": "This API endpoint allows modifying information about an item in the cart by sending an HTTP PATCH request to `/carts/:cartId/items/:itemId`. The request body should be in JSON format and must include the `quantity` parameter to specify the new quantity of the item.\n\n### Parameters\n\n- `cartId` (string, path, required): Specifies the cart id.\n- `itemId` (string, path, required): Specifies the item id.\n- `quantity` (integer, body, required): Quantity of the item.\n    \n\n### Status codes\n\n- 204 No Content: Indicates that the item has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided are invalid or missing.\n- 404 Not found: The cart or the item could not be found.\n    \n\n### Example\n\n``` json\n{\n  \"quantity\": 5\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Replace product in cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"  pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\" : 4643,\n    \"quantity\" : 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to replace an item in the cart by sending an HTTP PUT request to `{{baseUrl}}/carts/:cartId/items/:itemId`.\n\n#### Request Body\n\nThe request body should be in JSON format and include the following parameters:\n\n- `productId` (integer, required): Specifies the product id.\n- `quantity` (integer, optional): Specifies the quantity.\n    \n\n#### Parameters\n\n- `cartId` (string, path, required): Specifies the cart id.\n- `itemId` (string, path, required): Specifies the item id.\n    \n\n#### Status codes\n\n- 204 No Content: Indicates that the item has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided are invalid or missing.\n- 404 Not found: The cart or the item could not be found.\n    \n\n#### Example\n\n``` json\n{\n    \"productId\": 123,\n    \"quantity\": 2\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product in cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"  pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartID}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}"
+								}
+							]
+						},
+						"description": "Deletes the specified item from the cart.\n\n#### Parameters\n\n- cartId (string) - Specifies the cart id. (Required)\n- itemId (string) - Specifies the item id. (Required)\n    \n\n#### Status codes\n\n- 204 No Content: Indicates that the item has been deleted successfully.\n- 404 Not found: The cart or the item could not be found."
+					},
+					"response": []
+				},
+				{
+					"name": "Register API client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientName\" : \"Andrew Friedman\",\n    \"clientEmail\" : \"andrewfriedman01@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api-clients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api-clients"
+							]
+						},
+						"description": "Registers a new API client.\n\n#### HTTP Request\n\n``` json\nPOST {{baseUrl}}/api-clients\n\n ```\n\n#### Parameters\n\nThe request body needs to be in JSON format.\n\n| Name | Type | In | Required | Description |\n| --- | --- | --- | --- | --- |\n| clientName | string | body | Yes | The name of the API client. |\n| clientEmail | string | body | Yes | The email address of the API client. |\n\n\\*The email address DOES NOT need to be real. The email will not be stored on the server.\n\n#### Status codes\n\n- 201 Created: Indicates that the client has been registered successfully.\n- 400 Bad Request: Indicates that the parameters provided are invalid.\n- 409 Conflict: Indicates that an API client has already been registered with this email address.\n    \n\n#### Example request body:\n\n``` json\n{\n   \"clientName\": \"Postman on Valentin's computer\",\n   \"clientEmail\": \"valentin@example.com\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get single order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderID}}"
+								}
+							]
+						},
+						"description": "Returns a single order.\n\n#### Parameters\n\n- Authorization (string, header, required): The bearer token of the API client.\n    \n- orderId (string, path, required): The order id.\n    \n- invoice (boolean, query, optional): Show the PDF invoice.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n- 404 Not found: Indicates that there is no order with the specified id associated with the API client."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Created order is in the list\", function () {",
+									"    const orderFound = pm.response.json().find((order => order.id === pm.collectionVariables.get(\"orderId\"))); ",
+									"",
+									"    console.log(orderFound);",
+									"",
+									"    pm.expect(orderFound).is.an(\"object\");",
+									"    ",
+									"    if (orderFound) {",
+									"        pm.collectionVariables.set(\"order\", orderFound);",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						},
+						"description": "Returns all orders created by the API client.\n\n#### Parameters\n\n- Authorization: (string, header, required) - Specifies the bearer token of the API client.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details."
+					},
+					"response": []
+				},
+				{
+					"name": "Create an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Order was created\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"",
+									"    pm.expect(jsonData).to.haveOwnProperty(\"created\");",
+									"    pm.expect(jsonData.created).to.be.an(\"boolean\");",
+									"    pm.expect(jsonData.created).to.equal(true);",
+									"",
+									"    pm.expect(jsonData).to.haveOwnProperty(\"orderId\");",
+									"    pm.expect(jsonData.orderId).to.be.an(\"string\");",
+									"    pm.collectionVariables.set(\"orderId\", jsonData.orderId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cartId\" : \"{{cartID}}\",\r\n    \"customerName\" : \"{{$randomFullName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						},
+						"description": "The `POST /orders` endpoint is used to submit a new order. Upon successful submission, the associated cart is deleted.\n\n#### Parameters\n\n- Authorization: `string` (header, required) - The bearer token of the API client.\n- cartId: `string` (body, required) - The cart id.\n- customerName: `string` (body, required) - The name of the customer.\n- comment: `string` (body, optional) - A comment associated with the order.\n    \n\n#### Example request body:\n\n``` json\n{\n   \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n   \"customerName\": \"John Doe\"\n}\n\n ```\n\n#### Response\n\nUpon successful submission, the response will have a status code of 201 and a JSON content with the following structure:\n\n``` json\n{\n   \"created\": true,\n   \"orderId\": \"\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Update order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"  pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"comment\": \"Pickup at 2pm.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderID}}"
+								}
+							]
+						},
+						"description": "Updates the order with the specified orderId.\n\nThe request body needs to be in JSON format.\n\n### Parameters\n\n- Authorization: string (header, required) - The bearer token of the API client.\n- orderId: string (path, required) - The order id.\n- customerName: string (body, optional) - The name of the customer.\n- comment: string (body, optional) - A comment associated with the order.\n    \n\n### Status codes\n\n- 204 No Content: Indicates that the order has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n- 404 Not found: Indicates that there is no order with the specified id associated with the API client.\n    \n\n### Example request body:\n\n```\n{\n  \"customerName\": \"Joe Doe\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"  pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"comment\": \"Pickup at 2pm.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderID}}"
+								}
+							]
+						},
+						"description": "Deletes the order with the specified orderId.\n\n## Parameters\n\n- Authorization (header) - The bearer token of the API client. (Required)\n- orderId (path) - The order id. (Required)\n    \n\n## Status codes\n\n- 204 No Content - Indicates that the order has been deleted successfully.\n- 400 Bad Request - Indicates that the parameters provided are invalid.\n- 401 Unauthorized - Indicates that the request has not been authenticated. Check the response body for additional details.\n- 404 Not found - Indicates that there is no order with the specified id associated with the API client."
+					},
+					"response": []
+				},
+				{
+					"name": "Get single order (missing)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 404\", function () {",
+									"  pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message contains the deleted order id.\", function () {",
+									"    const data = pm.response.json();",
+									"",
+									"    pm.expect(data).to.haveOwnProperty(\"error\");",
+									"    pm.expect(data.error).to.be.an(\"string\");",
+									"    pm.expect(data.error).to.contain(pm.collectionVariables.get(\"orderID\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderID}}"
+								}
+							]
+						},
+						"description": "Returns a single order.\n\n#### Parameters\n\n- Authorization (string, header, required): The bearer token of the API client.\n    \n- orderId (string, path, required): The order id.\n    \n- invoice (boolean, query, optional): Show the PDF invoice.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n- 404 Not found: Indicates that there is no order with the specified id associated with the API client."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Missing authentication",
+			"item": [
+				{
+					"name": "Missing header",
+					"item": [
+						{
+							"name": "Create an order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\" : \"{{cartID}}\",\r\n    \"customerName\" : \"{{$randomFullName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									]
+								},
+								"description": "The `POST /orders` endpoint is used to submit a new order. Upon successful submission, the associated cart is deleted.\n\n#### Parameters\n\n- Authorization: `string` (header, required) - The bearer token of the API client.\n- cartId: `string` (body, required) - The cart id.\n- customerName: `string` (body, required) - The name of the customer.\n- comment: `string` (body, optional) - A comment associated with the order.\n    \n\n#### Example request body:\n\n``` json\n{\n   \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n   \"customerName\": \"John Doe\"\n}\n\n ```\n\n#### Response\n\nUpon successful submission, the response will have a status code of 201 and a JSON content with the following structure:\n\n``` json\n{\n   \"created\": true,\n   \"orderId\": \"\"\n}\n\n ```"
+							},
+							"response": []
+						},
+						{
+							"name": "Get all orders",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									]
+								},
+								"description": "Returns all orders created by the API client.\n\n#### Parameters\n\n- Authorization: (string, header, required) - Specifies the bearer token of the API client.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details."
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Missing authorization header\", () => {",
+									"    pm.expect(pm.response.json().error).to.equal(\"Missing Authorization header.\");",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Invalid Token",
+					"item": [
+						{
+							"name": "Create an order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "c8a75070946c31d09824d1dee664486c0ae72ee4586695e52009fce83fca4d9g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\" : \"{{cartID}}\",\r\n    \"customerName\" : \"{{$randomFullName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									]
+								},
+								"description": "The `POST /orders` endpoint is used to submit a new order. Upon successful submission, the associated cart is deleted.\n\n#### Parameters\n\n- Authorization: `string` (header, required) - The bearer token of the API client.\n- cartId: `string` (body, required) - The cart id.\n- customerName: `string` (body, required) - The name of the customer.\n- comment: `string` (body, optional) - A comment associated with the order.\n    \n\n#### Example request body:\n\n``` json\n{\n   \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n   \"customerName\": \"John Doe\"\n}\n\n ```\n\n#### Response\n\nUpon successful submission, the response will have a status code of 201 and a JSON content with the following structure:\n\n``` json\n{\n   \"created\": true,\n   \"orderId\": \"\"\n}\n\n ```"
+							},
+							"response": []
+						},
+						{
+							"name": "Get all orders",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "c8a75070946c31d09824d1dee664486c0ae72ee4586695e52009fce83fca4d9g",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									]
+								},
+								"description": "Returns all orders created by the API client.\n\n#### Parameters\n\n- Authorization: (string, header, required) - Specifies the bearer token of the API client.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details."
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.test(\"Wrong authorization header\", () => {",
+									"    pm.expect(pm.response.json().error).to.equal(\"Invalid bearer token.\");",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			],
+			"description": "Testing authentication errors",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.test(\"Response status code is 401\", function () {",
+							"  pm.response.to.have.status(401);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Invalid inputs",
+			"item": [
+				{
+					"name": "Get all products - invalid category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid category\", function () {",
+									"    pm.expect(pm.response.json().error).contains(\"Invalid value for query parameter 'category'.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=2&category=invalid-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "results",
+									"value": "2"
+								},
+								{
+									"key": "category",
+									"value": "invalid-token"
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory.\n\n#### Parameters\n\n- `category` (string, query, optional): Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.\n- `results` (integer, query, optional): Specifies the number of results you want. Must be a number between 1 and 20. By default, only 20 products will be displayed.\n- `available` (boolean, query, optional): Specifies the availability of the products. By default, all products will be displayed.\n    \n\n#### Response\n\nThe response will be a JSON array containing objects with the following properties:\n\n- `id` (number): The unique identifier of the product.\n- `category` (string): The category of the product.\n- `name` (string): The name of the product.\n- `inStock` (boolean): Indicates the availability of the product.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 400 Bad Request: Indicates that the parameters provided are invalid."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results > maximum",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid results request\", function () {",
+									"    pm.expect(pm.response.json().error).contains(\"Invalid value for query parameter 'results'.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=21&category=coffee",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "results",
+									"value": "21"
+								},
+								{
+									"key": "category",
+									"value": "coffee"
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory.\n\n#### Parameters\n\n- `category` (string, query, optional): Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.\n- `results` (integer, query, optional): Specifies the number of results you want. Must be a number between 1 and 20. By default, only 20 products will be displayed.\n- `available` (boolean, query, optional): Specifies the availability of the products. By default, all products will be displayed.\n    \n\n#### Response\n\nThe response will be a JSON array containing objects with the following properties:\n\n- `id` (number): The unique identifier of the product.\n- `category` (string): The category of the product.\n- `name` (string): The name of the product.\n- `inStock` (boolean): Indicates the availability of the product.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 400 Bad Request: Indicates that the parameters provided are invalid."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results < minimum",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid results request\", function () {",
+									"    pm.expect(pm.response.json().error).contains(\"Invalid value for query parameter 'results'.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=-1&category=coffee",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "results",
+									"value": "-1"
+								},
+								{
+									"key": "category",
+									"value": "coffee"
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory.\n\n#### Parameters\n\n- `category` (string, query, optional): Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.\n- `results` (integer, query, optional): Specifies the number of results you want. Must be a number between 1 and 20. By default, only 20 products will be displayed.\n- `available` (boolean, query, optional): Specifies the availability of the products. By default, all products will be displayed.\n    \n\n#### Response\n\nThe response will be a JSON array containing objects with the following properties:\n\n- `id` (number): The unique identifier of the product.\n- `category` (string): The category of the product.\n- `name` (string): The name of the product.\n- `inStock` (boolean): Indicates the availability of the product.\n    \n\n#### Status codes\n\n- 200 OK: Indicates a successful response.\n- 400 Bad Request: Indicates that the parameters provided are invalid."
+					},
+					"response": []
+				}
+			],
+			"description": "Testing errors for invalid inputs",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"  pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://simple-grocery-store-api.glitch.me"
+		},
+		{
+			"key": "accessToken",
+			"value": "YOUR ACCESS TOKEN",
+			"type": "string"
+		},
+		{
+			"key": "cartID",
+			"value": "YOUR CART ID",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": ""
+		},
+		{
+			"key": "lastAddedItemId",
+			"value": "YOUR ITEM ID"
+		},
+		{
+			"key": "order",
+			"value": ""
+		}
+	]
+}
