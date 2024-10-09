@@ -6,7 +6,6 @@ The API is available at `https://simple-grocery-store-api.glitch.me`
 
 Alternative URL: `http://simple-grocery-store-api.online/` (HTTP only!)
 
-Link to official documentation is [here](https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md)
 
 # 📁 Collection: Happy Path
 
